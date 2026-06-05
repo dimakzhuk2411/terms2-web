@@ -17,7 +17,8 @@ export default function LoginForm() {
     const router = useRouter();
 
     const handleLogin = async () => {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/login`, {
+        
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BACK_URL}:${process.env.NEXT_PUBLIC_BACK_PORT}/login`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -34,6 +35,7 @@ export default function LoginForm() {
         if (!res.ok) {
             setErrorText(data.error);
             setShowError(true);
+            return
         }
 
         router.push("/");
@@ -54,7 +56,7 @@ export default function LoginForm() {
                 {showError && (
                     <Alert variant={"destructive"} className="flex items-center justify-between">
                         <div className="flex gap-x-2 items-center">
-                            <WarningCircleIcon className="text-lg"/>
+                            <WarningCircleIcon className="text-lg" />
                             <AlertTitle>{errorText}</AlertTitle>
                         </div>
                         <Button variant={"ghost"} size={"icon"} onClick={handleCloseError}>

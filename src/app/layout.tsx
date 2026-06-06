@@ -27,7 +27,7 @@ export default async function RootLayout({
     >
       <body className="min-h-0 h-full">
 
-        <ThemeProvider attribute={"class"} defaultTheme="dark" enableSystem disableTransitionOnChange>
+        <ThemeProvider attribute={"class"} defaultTheme="dark" disableTransitionOnChange>
           <div className="min-h-0 h-full">
             <TooltipProvider>
               {children}

@@ -19,6 +19,7 @@ import { ModeToggle } from "@/components/custom/themeModeToggler";
 import { IconBase, UserListIcon, UsersThreeIcon } from "@phosphor-icons/react";
 import type { MenuItem } from "@/lib/navigation/types";
 import { ICON_REGISTRY } from "@/lib/navigation/icon-registry";
+import Link from "next/link";
 
 type AppSidebarProps = React.ComponentProps<typeof Sidebar> & {
     menu: MenuItem[];
@@ -30,14 +31,16 @@ export function AppSidebar({ menu, ...props }: AppSidebarProps) {
             <SidebarHeader>
                 <SidebarMenu>
                     <SidebarMenuItem>
-                        <SidebarMenuButton size={"lg"} >
-                            <div className="flex aspect-square size-8 items-center justify-center bg-sidebar-primary text-sidebar-primary-foreground">
-                                <UserListIcon />
-                            </div>
-                            <div className="grid flex-1 text-left text-sm leading-tight">
-                                <span className="truncate font-bold">Сроки</span>
-                                {/* <span className="truncate text-xs">РИЦ</span> */}
-                            </div>
+                        <SidebarMenuButton size={"lg"} asChild>
+                            <Link href={"/"}>
+                                <div className="flex aspect-square size-8 items-center justify-center bg-sidebar-primary text-sidebar-primary-foreground">
+                                    <UserListIcon />
+                                </div>
+                                <div className="grid flex-1 text-left text-sm leading-tight">
+                                    <span className="truncate font-bold">Сроки</span>
+                                    {/* <span className="truncate text-xs">РИЦ</span> */}
+                                </div>
+                            </Link>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
                 </SidebarMenu>
@@ -50,24 +53,25 @@ export function AppSidebar({ menu, ...props }: AppSidebarProps) {
                             return (
                                 <SidebarMenuItem key={item.title}>
                                     <SidebarMenuButton tooltip={item.title} asChild>
-                                        <a href={item.url}>
+                                        <Link href={item.url}>
                                             {Icon && <Icon />}
                                             <span>{item.title}</span>
-                                        </a>
+                                        </Link>
                                     </SidebarMenuButton>
                                     <SidebarMenuSub>
                                         {item.items?.map((i) => {
                                             const SubIcon = i.icon ? ICON_REGISTRY[i.icon] : null;
                                             return (
-                                            <SidebarMenuSubItem key={i.title}>
-                                                <SidebarMenuSubButton asChild>
-                                                    <a href={i.url}>
-                                                        {SubIcon && <SubIcon />}
-                                                        <span>{i.title}</span>
-                                                    </a>
-                                                </SidebarMenuSubButton>
-                                            </SidebarMenuSubItem>
-                                        )})}
+                                                <SidebarMenuSubItem key={i.title}>
+                                                    <SidebarMenuSubButton asChild>
+                                                        <Link href={i.url}>
+                                                            {SubIcon && <SubIcon />}
+                                                            <span>{i.title}</span>
+                                                        </Link>
+                                                    </SidebarMenuSubButton>
+                                                </SidebarMenuSubItem>
+                                            )
+                                        })}
                                     </SidebarMenuSub>
                                 </SidebarMenuItem>
                             )

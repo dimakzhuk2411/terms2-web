@@ -4,13 +4,14 @@ import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/s
 import { AppSidebar } from "@/components/app-sidebar";
 import { Separator } from "@/components/ui/separator";
 import type { MenuItem } from "@/lib/navigation/types";
+import type { Session } from "@/types/Session";
 import { MENU_CONFIG } from "@/lib/navigation/menu-config";
 
-async function getSession() {
+async function getSession(): Promise<Session> {
     const cookieStore = await cookies();
 
     const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BACK_URL}:${process.env.NEXT_PUBLIC_BACK_PORT}/session`,
+        `${process.env.NEXT_PUBLIC_BACK_URL}:${process.env.NEXT_PUBLIC_BACK_PORT}/nextconnect/session`,
         {
             headers: {
                 Cookie: cookieStore.toString(),
@@ -24,7 +25,7 @@ async function getSession() {
     return res.json();
 }
 
-export function filterMenuByRoles(
+function filterMenuByRoles(
   menu: MenuItem[],
   roles: string[]
 ): MenuItem[] {
@@ -65,6 +66,7 @@ async function prepareSidebar() {
     const roles = await res.json();
 
     const menu = filterMenuByRoles(MENU_CONFIG, roles);
+    
     return menu
 }
 
@@ -84,11 +86,11 @@ export default async function ProtectedLayout({
     return (
         <div className="min-h-0 h-full">
             <SidebarProvider>
-                <AppSidebar menu={menu}/>
+                <AppSidebar menu={menu} session={session}/>
                 <SidebarInset>
                     <header className="flex h-16 shrink-0 items-center transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
                         <div className="flex w-full items-center gap-2 px-4">
-                            <SidebarTrigger />
+                            <SidebarTrigger size={"icon-lg"} variant="secondary" />
                             <Separator
                                 orientation="vertical"
                                 className="data-[orientation=vertical]:h-10"
@@ -100,7 +102,7 @@ export default async function ProtectedLayout({
                             </div>
                         </div>
                     </header>
-                    <div className="p-2">
+                    <div className="px-4 py-2 min-h-0 h-full">
                         {children}
                     </div>
                 </SidebarInset>

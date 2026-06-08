@@ -16,16 +16,20 @@ import {
     SidebarMenuSubButton
 } from "@/components/ui/sidebar"
 import { ModeToggle } from "@/components/custom/themeModeToggler";
-import { IconBase, UserListIcon, UsersThreeIcon } from "@phosphor-icons/react";
+import { UserListIcon, ListChecksIcon } from "@phosphor-icons/react";
 import type { MenuItem } from "@/lib/navigation/types";
+import type { Session } from "@/types/Session"
 import { ICON_REGISTRY } from "@/lib/navigation/icon-registry";
 import Link from "next/link";
+import { Empty, EmptyHeader, EmptyContent, EmptyMedia, EmptyTitle, EmptyDescription } from "./ui/empty";
+import { NavUser } from "./nav-user";
 
 type AppSidebarProps = React.ComponentProps<typeof Sidebar> & {
     menu: MenuItem[];
+    session: Session;
 };
 
-export function AppSidebar({ menu, ...props }: AppSidebarProps) {
+export function AppSidebar({ menu, session, ...props }: AppSidebarProps) {
     return (
         <Sidebar variant="floating" collapsible="icon" {...props}>
             <SidebarHeader>
@@ -76,11 +80,25 @@ export function AppSidebar({ menu, ...props }: AppSidebarProps) {
                                 </SidebarMenuItem>
                             )
                         })}
+                        {menu.length == 0 &&
+                            <Empty>
+                                <EmptyHeader>
+                                    <EmptyMedia variant="icon">
+                                        <ListChecksIcon />
+                                    </EmptyMedia>
+                                    <EmptyTitle>Нет модулей!</EmptyTitle>
+                                    <EmptyDescription>Для появления модулей в данном меню необходимо обратиться к администратору для назначения соответствующих ролей!</EmptyDescription>
+                                </EmptyHeader>
+                                <EmptyContent>
+
+                                </EmptyContent>
+                            </Empty>
+                        }
                     </SidebarMenu>
                 </SidebarGroup>
             </SidebarContent>
             <SidebarFooter>
-                <ModeToggle />
+                <NavUser session={session}/>
             </SidebarFooter>
         </Sidebar>
     )

@@ -35,8 +35,8 @@ export function filterMenuByRoles(
         : undefined;
 
       const canSee =
-        !item.permissions ||
-        item.permissions.some((r) => roles.includes(r));
+        item.permission &&
+        roles.includes(item.permission);
 
       const hasChildren = items && items.length > 0;
 
@@ -86,13 +86,18 @@ export default async function ProtectedLayout({
             <SidebarProvider>
                 <AppSidebar menu={menu}/>
                 <SidebarInset>
-                    <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
-                        <div className="flex items-center gap-2 px-4">
-                            <SidebarTrigger className="-ml-1" />
+                    <header className="flex h-16 shrink-0 items-center transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
+                        <div className="flex w-full items-center gap-2 px-4">
+                            <SidebarTrigger />
                             <Separator
                                 orientation="vertical"
-                                className="mr-2 data-[orientation=vertical]:h-10"
+                                className="data-[orientation=vertical]:h-10"
                             />
+                            <div className="flex flex-1 w-full h-10 justify-stretch">
+                                <div id="module-name" className="h-full w-full"/>
+                                <div id="action-pack-1" className="h-full w-full"/>
+                                <div id="action-pack-2" className="h-full w-full"/>
+                            </div>
                         </div>
                     </header>
                     <div className="p-2">

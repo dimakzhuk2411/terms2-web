@@ -144,7 +144,7 @@ export function Dropzone({
               className="flex items-center justify-between gap-2 bg-muted/40 px-2 py-1"
             >
               <div className="flex flex-col overflow-hidden">
-                <span className="text-sm truncate max-w-[200px]">
+                <span className="text-sm truncate max-w-[300px]">
                   {file.name}
                 </span>
                 <span className="text-xs text-muted-foreground">

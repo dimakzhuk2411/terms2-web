@@ -7,34 +7,35 @@ import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Button } from "./ui/button";
 import { EyeIcon, EyeClosedIcon, WarningIcon, InfoIcon, QuestionIcon } from "@phosphor-icons/react";
 import { Separator } from "./ui/separator";
-import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "./ui/dialog";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import { Dropzone } from "./dropzone";
+import { createPortal } from "react-dom";
+import { Spinner } from "./ui/spinner";
 
 export function AccountInfo() {
 
-    useEffect(() => {
-        async function loadData() {
-            try {
-                const response = await fetch(`${process.env.NEXT_PUBLIC_BACK_URL}:${process.env.NEXT_PUBLIC_BACK_PORT}/account`, {
-                    credentials: "include"
-                });
+    const loadData = async () => {
+        try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_BACK_URL}:${process.env.NEXT_PUBLIC_BACK_PORT}/account`, {
+                credentials: "include"
+            });
 
-                if (!response.ok) {
-                    throw new Error(response.statusText);
-                }
+            if (!response.ok) {
+                throw new Error(response.statusText);
+            }
 
-                const account = await response.json();
-                setUserData(account);
-                console.log(account);
-            }
-            catch (err: any) {
-                setError(err.message);
-                setShowError(true);
-            }
+            const account = await response.json();
+            setUserData(account);
+            console.log(account);
         }
+        catch (err: any) {
+            setError(err.message);
+            setShowError(true);
+        }
+    }
 
+    useEffect(() => {
         loadData();
     }, []);
 
@@ -44,11 +45,12 @@ export function AccountInfo() {
     const [showNewPassword, setShowNewPassword] = useState(false);
     const [showCurrentPassword, setShowCurrentPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-    const [showPassAlert, setShowPassAlert] = useState(false);
     const [currentPassword, setCurrentPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [newCert, setNewCert] = useState<File[]>([]);
+    const moduleName = document.getElementById("module-name");
+    const [changePassProcessing, setChangePassProcessing] = useState(false);
 
     const isMismatch =
         confirmPassword.length > 0 &&
@@ -63,11 +65,41 @@ export function AccountInfo() {
     };
 
     const changePassword = async () => {
+        setChangePassProcessing(true);
 
+        if (isMismatch) { setChangePassProcessing(false); return }
+
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BACK_URL}:${process.env.NEXT_PUBLIC_BACK_PORT}/changePassword`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            credentials: "include",
+            body: JSON.stringify({
+                currentPassword,
+                newPassword
+            })
+        });
+
+        setError(res.statusText);
+        setShowError(true);
+        setCurrentPassword("");
+        setNewPassword("");
+        setConfirmPassword("");
+        setChangePassProcessing(false);
+        await loadData();
+        setError("Пароль успешно изменен");
+        setShowError(true);
     }
 
     return (
         <div className="h-full w-full">
+            {moduleName &&
+                createPortal(
+                    <p>Учетная запись</p>,
+                    moduleName
+                )
+            }
             <div className="flex flex-col gap-y-2 w-full h-full">
                 <div className="flex gap-x-2 w-full justify-stretch h-full">
                     <Card className="w-full">
@@ -137,7 +169,7 @@ export function AccountInfo() {
                                         <div id="oldPassword" className="relative w-full">
                                             <Input type={showCurrentPassword ? "text" : "password"} value={currentPassword} onChange={(e) => { setCurrentPassword(e.target.value) }} />
                                             <Button variant={"link"} size={"icon"} onClick={() => { setShowCurrentPassword(!showCurrentPassword) }} className="absolute right-1 cursor-pointer hover:scale-125 active:scale-95 transition text-(--foreground)">
-                                                {showNewPassword ? (
+                                                {showCurrentPassword ? (
                                                     <div>
                                                         <EyeIcon />
                                                     </div>
@@ -152,7 +184,7 @@ export function AccountInfo() {
                                     <Field>
                                         <FieldLabel htmlFor="newPass">Новый пароль</FieldLabel>
                                         <div id="newPass" className="relative w-full">
-                                            <Input type={showNewPassword ? "text" : "password"} onClick={() => { setShowPassAlert(true) }} value={newPassword} onChange={(e) => { setNewPassword(e.target.value) }} aria-invalid={(!rules.length || !rules.lower || !rules.upper || !rules.number || !rules.special) && newPassword.length > 0} />
+                                            <Input type={showNewPassword ? "text" : "password"} value={newPassword} onChange={(e) => { setNewPassword(e.target.value) }} aria-invalid={(!rules.length || !rules.lower || !rules.upper || !rules.number || !rules.special) && newPassword.length > 0} />
                                             <Button variant={"link"} size={"icon"} onClick={() => { setShowNewPassword(!showNewPassword) }} className="absolute right-1 cursor-pointer hover:scale-125 active:scale-95 transition text-(--foreground)">
                                                 {showNewPassword ? (
                                                     <div>
@@ -202,7 +234,13 @@ export function AccountInfo() {
                                         </div>
                                     </Field>
                                     <Field>
-                                        <Button>Изменить пароль</Button>
+                                        <Button onClick={async () => { await changePassword() }} disabled={changePassProcessing}>
+                                            {
+                                                changePassProcessing &&
+                                                <Spinner/>
+                                            }
+                                            Изменить пароль
+                                        </Button>
                                     </Field>
                                 </FieldGroup>
                             </FieldSet>
@@ -246,37 +284,10 @@ export function AccountInfo() {
                                     </div>
                                     <Separator orientation="vertical" />
                                     <div className="flex flex-col w-full gap-y-4">
-                                        <Dropzone size={"sm"} maxFiles={8} extensions={["jpg", "jpeg", "png"]} files={newCert} onChange={(files) => {setNewCert(files)}}/>
+                                        <Dropzone size={"sm"} maxFiles={1} extensions={["crt", "cer"]} files={newCert} onChange={(files) => { setNewCert(files) }} />
                                         <Button>Сменить сертификат</Button>
                                     </div>
                                 </div>
-
-
-                                {/* <div className="flex justify-stretch gap-x-1">
-                                    
-                                </div>
-                                <Field>
-                                    <FieldLabel htmlFor="chooseCert">Выбрать новый сертификат</FieldLabel>
-                                    <div id="chooseCert" className="flex justify-stretch items-center gap-x-1">
-                                        <Input type="file" />
-                                        <Button>Сменить сертификат</Button>
-                                    </div>
-                                    <div className="border p-2 text-center cursor-pointer hover:bg-muted/50 transition">
-                                        <Input
-                                            type="file"
-                                            className="hidden"
-                                            id="file"
-                                            onChange={(e) => console.log(e.target.files)}
-                                        />
-
-                                        <label htmlFor="file" className="cursor-pointer">
-                                            <p className="text-sm font-medium">Перетащите файл или нажмите</p>
-                                            <p className="text-xs text-muted-foreground">
-                                                PNG, JPG, PDF до 10MB
-                                            </p>
-                                        </label>
-                                    </div>
-                                </Field> */}
                             </FieldGroup>
                         </FieldSet>
                     </CardContent>
@@ -293,7 +304,7 @@ export function AccountInfo() {
                         <p>{error}</p>
                     </div>
                     <DialogFooter>
-                        <Button className="w-full">Ок</Button>
+                        <Button className="w-full" onClick={() => {setShowError(!showError)}}>Ок</Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>

@@ -95,10 +95,10 @@ export default async function ProtectedLayout({
                                 orientation="vertical"
                                 className="data-[orientation=vertical]:h-10"
                             />
-                            <div className="flex flex-1 w-full h-10 justify-stretch">
-                                <div id="module-name" className="h-full w-full"/>
-                                <div id="action-pack-1" className="h-full w-full"/>
-                                <div id="action-pack-2" className="h-full w-full"/>
+                            <div className="flex flex-1 w-full h-10 gap-x-4 justify-stretch items-center">
+                                <div id="module-name" className="h-full w-full flex items-center"/>
+                                <div id="action-pack-1" className="h-full w-full flex items-center"/>
+                                <div id="action-pack-2" className="h-full w-full flex items-center"/>
                             </div>
                         </div>
                     </header>

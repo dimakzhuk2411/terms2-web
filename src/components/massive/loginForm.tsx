@@ -4,12 +4,11 @@ import { Card, CardHeader, CardContent, CardFooter, CardTitle, CardDescription }
 import { Field, FieldGroup, FieldLegend } from "../ui/field"
 import { Input } from "../ui/input"
 import { Button } from "../ui/button"
-import { DoorIcon, EyeClosedIcon, EyeIcon, WarningCircleIcon, XIcon } from "@phosphor-icons/react"
+import { EyeClosedIcon, EyeIcon, WarningCircleIcon, XIcon, SignInIcon } from "@phosphor-icons/react"
 import { useState } from "react"
 import { Alert, AlertTitle } from "../ui/alert"
 import { useRouter } from "next/navigation"
 import { Spinner } from "../ui/spinner"
-import { Toggle } from "../ui/toggle"
 
 export default function LoginForm() {
     const [login, setLogin] = useState("");
@@ -77,12 +76,12 @@ export default function LoginForm() {
                 <FieldGroup>
                     <Field>
                         <FieldLegend className="select-none">Логин</FieldLegend>
-                        <Input type="email" value={login} onChange={(e) => setLogin(e.target.value)} />
+                        <Input type="email" value={login} onChange={(e) => setLogin(e.target.value)} onKeyDown={(e) => {if (e.key == "Enter") {handleLogin()}}}/>
                     </Field>
                     <Field>
                         <FieldLegend className="select-none">Пароль</FieldLegend>
                         <div className="relative w-full">
-                            <Input type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} className="pr-10" />
+                            <Input type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} className="pr-10" onKeyDown={(e) => {if (e.key == "Enter") {handleLogin()}}} />
                             {/* <Toggle pressed={showPassword} onPressedChange={setShowPassword} className="absolute right-1 top-1/2 -translate-y-1/2">
                                 {showPassword ? (
                                     <div>
@@ -110,7 +109,7 @@ export default function LoginForm() {
                 </FieldGroup>
             </CardContent>
             <CardFooter className="flex flex-col w-full">
-                <Button className="w-full" onClick={handleLogin}>
+                <Button className="w-full" onClick={handleLogin} disabled={loading}>
                     {loading ? (
                         <div className="flex flex-row gap-x-2">
                             <Spinner />
@@ -118,7 +117,7 @@ export default function LoginForm() {
                         </div>
                     ) : (
                         <div className="flex flex-row gap-x-2">
-                            <DoorIcon />
+                            <SignInIcon />
                             Войти
                         </div>
                     )}

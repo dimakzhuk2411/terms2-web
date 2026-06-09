@@ -8,10 +8,10 @@ export type Account = {
         employee: {
             fullname: string,
             department: {
-                clientName: true
+                clientName: string
             },
             position: {
-                clientName: true
+                clientName: string
             }
         }
     }

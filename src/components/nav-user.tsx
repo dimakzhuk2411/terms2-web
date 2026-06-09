@@ -3,6 +3,7 @@ import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "./ui/sidebar"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuGroup, DropdownMenuItem } from "./ui/dropdown-menu"
 import { CaretUpDownIcon, UserCircleIcon, SignOutIcon } from "@phosphor-icons/react"
 import { useRouter } from "next/navigation"
+import { ModeToggle } from "./custom/themeModeToggler"
 
 type Props = {
     session: Session;
@@ -27,10 +28,10 @@ export function NavUser({ session }: Props) {
 
     return (
         <SidebarMenu>
-            <SidebarMenuItem>
+            <SidebarMenuItem className="h-fit">
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <SidebarMenuButton size={"lg"} className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
+                        <SidebarMenuButton size={"lg"} className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground h-fit">
                             <div className="grid flex-1 text-left text-sm leading-tight break-normal">
                                 <span className="font-medium text-sm">{session?.user.employee.fullname}</span>
                                 <span className="text-xs">{session?.user.email}</span>
@@ -54,6 +55,8 @@ export function NavUser({ session }: Props) {
                                 </div>
                             </div>
                         </DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <ModeToggle variant={"ghost"} className="w-full my-1"/>
                         <DropdownMenuSeparator />
                         <DropdownMenuGroup>
                             <DropdownMenuItem onClick={() => {router.push("/account")}}>

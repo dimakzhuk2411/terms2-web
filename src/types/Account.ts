@@ -3,7 +3,8 @@ export type Account = {
         email: string,
         UAuth: {
             certID: string | null,
-            certValid: Date | null
+            certValidFrom: string | null,
+            certValid: string | null
         }[],
         employee: {
             fullname: string,

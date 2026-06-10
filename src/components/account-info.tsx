@@ -5,7 +5,7 @@ import { Field, FieldError, FieldGroup, FieldLabel, FieldSeparator, FieldSet } f
 import { Input } from "./ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Button } from "./ui/button";
-import { EyeIcon, EyeClosedIcon, WarningIcon, InfoIcon, QuestionIcon } from "@phosphor-icons/react";
+import { EyeIcon, EyeClosedIcon, QuestionIcon } from "@phosphor-icons/react";
 import { Separator } from "./ui/separator";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "./ui/dialog";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
@@ -14,6 +14,9 @@ import { createPortal } from "react-dom";
 import { Spinner } from "./ui/spinner";
 
 export function AccountInfo() {
+
+    const [userData, setUserData] = useState<Account>();
+    const [moduleEl, setModuleEl] = useState<HTMLElement | null>(null);
 
     const loadData = async () => {
         try {
@@ -26,8 +29,8 @@ export function AccountInfo() {
             }
 
             const account = await response.json();
+
             setUserData(account);
-            console.log(account);
         }
         catch (err: any) {
             setError(err.message);
@@ -39,7 +42,10 @@ export function AccountInfo() {
         loadData();
     }, []);
 
-    const [userData, setUserData] = useState<Account>();
+    useEffect(() => {
+        setModuleEl(document.getElementById("module-name"));
+    }, []);
+
     const [error, setError] = useState("");
     const [showError, setShowError] = useState(false);
     const [showNewPassword, setShowNewPassword] = useState(false);
@@ -49,8 +55,8 @@ export function AccountInfo() {
     const [newPassword, setNewPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [newCert, setNewCert] = useState<File[]>([]);
-    const moduleName = document.getElementById("module-name");
     const [changePassProcessing, setChangePassProcessing] = useState(false);
+    const [changeCertProcessing, setChangeCertProcessing] = useState(false);
 
     const isMismatch =
         confirmPassword.length > 0 &&
@@ -64,12 +70,29 @@ export function AccountInfo() {
         special: /[^A-Za-z0-9]/.test(newPassword),
     };
 
+    const formatDate = (inputDate: string) => {
+        const date = new Date(inputDate);
+
+        const formatted = date.toLocaleString("ru-RU", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+        });
+
+        console.log(formatted);
+
+        return formatted
+    }
+
     const changePassword = async () => {
         setChangePassProcessing(true);
 
         if (isMismatch) { setChangePassProcessing(false); return }
 
-        const res = await fetch(`${process.env.NEXT_PUBLIC_BACK_URL}:${process.env.NEXT_PUBLIC_BACK_PORT}/changePassword`, {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BACK_URL}:${process.env.NEXT_PUBLIC_BACK_PORT}/account/changePassword`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -81,23 +104,61 @@ export function AccountInfo() {
             })
         });
 
-        setError(res.statusText);
-        setShowError(true);
+        if (!res.ok) {
+            setError(res.statusText);
+            setShowError(true);
+        }
+        else {
+            setError("Пароль успешно изменен");
+            setShowError(true);
+        }
+
         setCurrentPassword("");
         setNewPassword("");
         setConfirmPassword("");
         setChangePassProcessing(false);
         await loadData();
-        setError("Пароль успешно изменен");
-        setShowError(true);
+    }
+
+    const changeCertificate = async () => {
+        setChangeCertProcessing(true);
+
+        if (!newCert[0].name.match(/\.(cer|crt)$/)) {
+            setError("Выбран файл отличный от файла сертификата. Попробуйте еще раз.");
+            setShowError(true);
+        }
+
+        const formData = new FormData();
+
+        formData.append("cert", newCert[0]);
+
+        const res = await fetch(
+            `${process.env.NEXT_PUBLIC_BACK_URL}:${process.env.NEXT_PUBLIC_BACK_PORT}/account/changeCertificate`, {
+            method: "POST",
+            credentials: "include",
+            body: formData
+        });
+
+        if (!res.ok) {
+            setError(res.statusText);
+            setShowError(true);
+        }
+        else {
+            setError("Сертификат успешно изменен");
+            setShowError(true);
+        }
+
+        setNewCert([]);
+        setChangeCertProcessing(false);
+        await loadData()
     }
 
     return (
         <div className="h-full w-full">
-            {moduleName &&
+            {moduleEl &&
                 createPortal(
                     <p>Учетная запись</p>,
-                    moduleName
+                    moduleEl
                 )
             }
             <div className="flex flex-col gap-y-2 w-full h-full">
@@ -237,7 +298,7 @@ export function AccountInfo() {
                                         <Button onClick={async () => { await changePassword() }} disabled={changePassProcessing}>
                                             {
                                                 changePassProcessing &&
-                                                <Spinner/>
+                                                <Spinner />
                                             }
                                             Изменить пароль
                                         </Button>
@@ -268,16 +329,16 @@ export function AccountInfo() {
                                     <div className="flex flex-col gap-y-5 w-full">
                                         <Field>
                                             <FieldLabel htmlFor="thumbprint">Отпечаток сертификата</FieldLabel>
-                                            <Input id="thumbprint" disabled />
+                                            <Input id="thumbprint" disabled defaultValue={userData?.user.UAuth[0].certID ? userData?.user.UAuth[0].certID : "Сертификат не установлен"} />
                                         </Field>
                                         <div className="flex justify-between items-center gap-x-2">
                                             <Field>
                                                 <FieldLabel htmlFor="validfrom">Годен с...</FieldLabel>
-                                                <Input id="validfrom" disabled />
+                                                <Input id="validfrom" disabled defaultValue={userData?.user.UAuth[0].certValidFrom ? formatDate(userData?.user.UAuth[0].certValidFrom) : "00.00.0000, 00:00:00"} />
                                             </Field>
                                             <Field>
                                                 <FieldLabel htmlFor="validto">Годен до...</FieldLabel>
-                                                <Input id="validto" disabled />
+                                                <Input id="validto" disabled defaultValue={userData?.user.UAuth[0].certValid ? formatDate(userData?.user.UAuth[0].certValid) : "00.00.0000, 00:00:00"} />
                                             </Field>
                                         </div>
 
@@ -285,7 +346,12 @@ export function AccountInfo() {
                                     <Separator orientation="vertical" />
                                     <div className="flex flex-col w-full gap-y-4">
                                         <Dropzone size={"sm"} maxFiles={1} extensions={["crt", "cer"]} files={newCert} onChange={(files) => { setNewCert(files) }} />
-                                        <Button>Сменить сертификат</Button>
+                                        <Button onClick={() => { changeCertificate(); }} disabled={changeCertProcessing}>
+                                            {changeCertProcessing &&
+                                                <Spinner />
+                                            }
+                                            Сменить сертификат
+                                        </Button>
                                     </div>
                                 </div>
                             </FieldGroup>
@@ -304,7 +370,7 @@ export function AccountInfo() {
                         <p>{error}</p>
                     </div>
                     <DialogFooter>
-                        <Button className="w-full" onClick={() => {setShowError(!showError)}}>Ок</Button>
+                        <Button className="w-full" onClick={() => { setShowError(!showError) }}>Ок</Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>

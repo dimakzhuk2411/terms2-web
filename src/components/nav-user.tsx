@@ -48,10 +48,10 @@ export function NavUser({ session }: Props) {
                         <DropdownMenuLabel className="p-0 font-normal">
                             <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                                 <div className="grid flex-1 text-left text-sm leading-tight break-normal">
-                                    <span className="font-bold">{session?.user.employee.fullname}</span>
-                                    <span className="text-sm">{session?.user.email}</span>
-                                    <span className="text-xs">{session?.user.employee.department.clientName}</span>
-                                    <span className="text-xs">{session?.user.employee.position.clientName}</span>
+                                    <span className="font-bold select-none">{session?.user.employee.fullname}</span>
+                                    <span className="text-sm select-none">{session?.user.email}</span>
+                                    <span className="text-xs select-none">{session?.user.employee.department.clientName}</span>
+                                    <span className="text-xs select-none">{session?.user.employee.position.clientName}</span>
                                 </div>
                             </div>
                         </DropdownMenuLabel>

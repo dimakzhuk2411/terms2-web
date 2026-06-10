@@ -15,7 +15,6 @@ import {
     SidebarMenuSubItem,
     SidebarMenuSubButton
 } from "@/components/ui/sidebar"
-import { ModeToggle } from "@/components/custom/themeModeToggler";
 import { UserListIcon, ListChecksIcon } from "@phosphor-icons/react";
 import type { MenuItem } from "@/lib/navigation/types";
 import type { Session } from "@/types/Session"
@@ -33,7 +32,7 @@ export function AppSidebar({ menu, session, ...props }: AppSidebarProps) {
     return (
         <Sidebar variant="floating" collapsible="icon" {...props}>
             <SidebarHeader>
-                <SidebarMenu>
+                <SidebarMenu className="select-none">
                     <SidebarMenuItem>
                         <SidebarMenuButton size={"lg"} asChild>
                             <Link href={"/"}>
@@ -51,7 +50,7 @@ export function AppSidebar({ menu, session, ...props }: AppSidebarProps) {
             </SidebarHeader>
             <SidebarContent>
                 <SidebarGroup>
-                    <SidebarMenu>
+                    <SidebarMenu className="select-none">
                         {menu.map((item) => {
                             const Icon = item.icon ? ICON_REGISTRY[item.icon] : null
                             return (

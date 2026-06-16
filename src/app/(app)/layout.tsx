@@ -22,7 +22,7 @@ async function getSession(): Promise<Session> {
 
     if (!res.ok) return null;
 
-    return res.json();
+    return await res.json();
 }
 
 function filterMenuByRoles(

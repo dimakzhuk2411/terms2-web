@@ -14,3 +14,7 @@ export type Session = {
         }
     }
 } | null
+
+export type Me = {
+    status: string
+} | null

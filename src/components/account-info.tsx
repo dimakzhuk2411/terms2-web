@@ -12,6 +12,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import { Dropzone } from "./dropzone";
 import { createPortal } from "react-dom";
 import { Spinner } from "./ui/spinner";
+import { Textarea } from "./ui/textarea";
 
 export function AccountInfo() {
 
@@ -81,8 +82,6 @@ export function AccountInfo() {
             minute: "2-digit",
             second: "2-digit",
         });
-
-        console.log(formatted);
 
         return formatted
     }
@@ -157,7 +156,7 @@ export function AccountInfo() {
         <div className="h-full w-full">
             {moduleEl &&
                 createPortal(
-                    <p>Учетная запись</p>,
+                    <p className="select-none">Учетная запись</p>,
                     moduleEl
                 )
             }
@@ -193,7 +192,7 @@ export function AccountInfo() {
                                     </Field>
                                     <Field>
                                         <FieldLabel htmlFor="department">Отдел</FieldLabel>
-                                        <Input id="department" defaultValue={userData?.user.employee.department.clientName} disabled />
+                                        <Textarea id="department" defaultValue={userData?.user.employee.department.clientName} disabled readOnly />
                                     </Field>
                                 </FieldGroup>
                             </FieldSet>

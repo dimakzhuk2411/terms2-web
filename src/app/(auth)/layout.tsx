@@ -1,13 +1,17 @@
-'use client'
-
 import { Me } from "@/types/Session";
 import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
 
 async function getSession(): Promise<Me> {
+    const cookieStore = await cookies();
+
     const res = await fetch(
         `${process.env.NEXT_PUBLIC_BACK_URL}:${process.env.NEXT_PUBLIC_BACK_PORT}/session`,
         {
-           credentials: "include" 
+            headers: {
+                Cookie: cookieStore.toString(),
+            },
+            cache: "no-store",
         }
     );
 
@@ -23,9 +27,9 @@ export default async function UnprotectedLayout({
 }>) {
     const session = await getSession();
 
-    if (session) redirect("/");
+    if (session) return redirect("/");
 
-    return (
+    else return (
         <div className="min-h-0 h-full w-full">
             {children}
         </div>

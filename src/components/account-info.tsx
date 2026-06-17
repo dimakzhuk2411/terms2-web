@@ -26,7 +26,8 @@ export function AccountInfo() {
             });
 
             if (!response.ok) {
-                throw new Error(response.statusText);
+                const error = await response.json();
+                throw new Error(error.error);
             }
 
             const account = await response.json();

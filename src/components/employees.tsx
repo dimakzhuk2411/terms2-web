@@ -7,6 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from ".
 import { Input } from "./ui/input";
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "./ui/empty";
 import { UserListIcon } from "@phosphor-icons/react";
+import { ScrollArea } from "./ui/scroll-area";
 
 export function EmployeesComponent() {
 
@@ -64,38 +65,40 @@ export function EmployeesComponent() {
                     )
                 }
                 {employeesList ? (
-                    <Table className="table-fixed w-full">
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead className="w-[24%] font-bold">Ф.И.О.</TableHead>
-                                <TableHead className="w-[18%] font-bold">Должность</TableHead>
-                                <TableHead className="w-[21%] font-bold">Отдел</TableHead>
-                                <TableHead className="w-[21%] font-bold">Управление</TableHead>
-                                <TableHead className="w-[16%] font-bold">Телефон</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {employeesList?.map((item) => (
-                                <TableRow key={item.id}>
-                                    <TableCell className="whitespace-normal break-words w-[24%]">{item.fullname}</TableCell>
-                                    <TableCell className="whitespace-normal break-words w-[18%]">{item.position.clientName}</TableCell>
-                                    <TableCell className="whitespace-normal break-words w-[21%]">{item.department.clientName}</TableCell>
-                                    <TableCell className="whitespace-normal break-words w-[21%]">{item.department.management.clientName}</TableCell>
-                                    <TableCell className="w-[16%]">
-                                        <div className="flex flex-col whitespace-normal break-words">
-                                            <span>Корп.: {item.corporate ? item.corporate : "не добавлен"}</span>
-                                            <span>Сот.: {item.mobile ? item.mobile : "не добавлен"}</span>
-                                        </div>
-                                    </TableCell>
+                    <ScrollArea className="h-full w-full">
+                        <Table className="table-fixed w-full">
+                            <TableHeader className="sticky z-10 top-0 bg-background">
+                                <TableRow>
+                                    <TableHead className="w-[24%] font-bold">Ф.И.О.</TableHead>
+                                    <TableHead className="w-[18%] font-bold">Должность</TableHead>
+                                    <TableHead className="w-[21%] font-bold">Отдел</TableHead>
+                                    <TableHead className="w-[21%] font-bold">Управление</TableHead>
+                                    <TableHead className="w-[16%] font-bold">Телефон</TableHead>
                                 </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
+                            </TableHeader>
+                            <TableBody>
+                                {employeesList?.map((item) => (
+                                    <TableRow key={item.id}>
+                                        <TableCell className="whitespace-normal break-words w-[24%]">{item.fullname}</TableCell>
+                                        <TableCell className="whitespace-normal break-words w-[18%]">{item.position.clientName}</TableCell>
+                                        <TableCell className="whitespace-normal break-words w-[21%]">{item.department.clientName}</TableCell>
+                                        <TableCell className="whitespace-normal break-words w-[21%]">{item.department.management.clientName}</TableCell>
+                                        <TableCell className="w-[16%]">
+                                            <div className="flex flex-col whitespace-normal break-words">
+                                                <span>Корп.: {item.corporate ? item.corporate : "не добавлен"}</span>
+                                                <span>Сот.: {item.mobile ? item.mobile : "не добавлен"}</span>
+                                            </div>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </ScrollArea>
                 ) : (
                     <Empty>
                         <EmptyHeader>
                             <EmptyMedia variant={"icon"}>
-                                <UserListIcon/>
+                                <UserListIcon />
                             </EmptyMedia>
                             <EmptyTitle className="select-none">Нет сотрудников</EmptyTitle>
                             <EmptyDescription className="select-none">Данные сотрудников не найдены или не созданы. Попробуйте перезагрузить страницу или создать сотрудника, нажав на кнопку "Создать сотрудника".</EmptyDescription>

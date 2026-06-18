@@ -6,7 +6,7 @@ import { createPortal } from "react-dom";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
 import { Input } from "../ui/input";
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "../ui/empty";
-import { UserListIcon, UserPlusIcon } from "@phosphor-icons/react";
+import { BuildingIcon, DeviceMobileCameraIcon, UserListIcon, UserPlusIcon } from "@phosphor-icons/react";
 import { ScrollArea } from "../ui/scroll-area";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { Button } from "../ui/button";
@@ -105,9 +105,13 @@ export function EmployeesComponent({canEdit} : {canEdit: boolean}) {
                                         <TableCell className="whitespace-normal break-words w-[21%]">{item.department.clientName}</TableCell>
                                         <TableCell className="whitespace-normal break-words w-[21%]">{item.department.management.clientName}</TableCell>
                                         <TableCell className="w-[16%]">
-                                            <div className="flex flex-col whitespace-normal break-words">
-                                                <span>Корп.: {item.corporate ? item.corporate : "не добавлен"}</span>
-                                                <span>Сот.: {item.mobile ? item.mobile : "не добавлен"}</span>
+                                            <div className="flex flex-col whitespace-normal break-words gap-y-2">
+                                                <span className="flex gap-x-2 items-center"><div className="flex items-center justify-center h-5 w-5 bg-(--primary)">
+                                                        <BuildingIcon weight="duotone" className="!text-white"/>
+                                                      </div> {item.corporate ? item.corporate : "не добавлен"}</span>
+                                                <span className="flex gap-x-2 items-center"><div className="flex items-center justify-center h-5 w-5 bg-(--primary)">
+                                                        <DeviceMobileCameraIcon weight="duotone" className="!text-white"/>
+                                                      </div> {item.mobile ? item.mobile : "не добавлен"}</span>
                                             </div>
                                         </TableCell>
                                     </TableRow>

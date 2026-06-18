@@ -22,9 +22,10 @@ import { ICON_REGISTRY } from "@/lib/navigation/icon-registry";
 import Link from "next/link";
 import { Empty, EmptyHeader, EmptyContent, EmptyMedia, EmptyTitle, EmptyDescription } from "./ui/empty";
 import { NavUser } from "./nav-user";
+import { Badge } from "./ui/badge";
 
 type AppSidebarProps = React.ComponentProps<typeof Sidebar> & {
-    menu: MenuItem[];
+    menu: MenuItem[] | null;
     session: Session;
 };
 
@@ -43,6 +44,9 @@ export function AppSidebar({ menu, session, ...props }: AppSidebarProps) {
                                     <span className="truncate font-bold">Сроки</span>
                                     {/* <span className="truncate text-xs">РИЦ</span> */}
                                 </div>
+                                <Badge className="bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300">
+                                    v2.0
+                                </Badge>
                             </Link>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
@@ -51,7 +55,7 @@ export function AppSidebar({ menu, session, ...props }: AppSidebarProps) {
             <SidebarContent>
                 <SidebarGroup>
                     <SidebarMenu className="select-none">
-                        {menu.map((item) => {
+                        {menu && menu.map((item) => {
                             const Icon = item.icon ? ICON_REGISTRY[item.icon] : null
                             return (
                                 <SidebarMenuItem key={item.title}>
@@ -79,7 +83,7 @@ export function AppSidebar({ menu, session, ...props }: AppSidebarProps) {
                                 </SidebarMenuItem>
                             )
                         })}
-                        {menu.length == 0 &&
+                        {(!menu || menu.length == 0) &&
                             <Empty>
                                 <EmptyHeader>
                                     <EmptyMedia variant="icon">

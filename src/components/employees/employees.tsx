@@ -3,18 +3,22 @@
 import { Employee } from "@/types/Employee";
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table";
-import { Input } from "./ui/input";
-import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "./ui/empty";
-import { UserListIcon } from "@phosphor-icons/react";
-import { ScrollArea } from "./ui/scroll-area";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
+import { Input } from "../ui/input";
+import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "../ui/empty";
+import { UserListIcon, UserPlusIcon } from "@phosphor-icons/react";
+import { ScrollArea } from "../ui/scroll-area";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
+import { Button } from "../ui/button";
+import { useRouter } from "next/navigation";
 
-export function EmployeesComponent() {
+export function EmployeesComponent({canEdit} : {canEdit: boolean}) {
 
     const [employeesList, setEmployeesList] = useState<Employee[] | null>(null);
     const [moduleEl, setModuleEl] = useState<HTMLElement | null>(null);
     const [ap1, setAp1] = useState<HTMLElement | null>(null);
     const [ap2, setAp2] = useState<HTMLElement | null>(null);
+    const router = useRouter();
 
 
 
@@ -64,10 +68,27 @@ export function EmployeesComponent() {
                         ap1
                     )
                 }
+                {(ap2 && canEdit) && 
+                    createPortal(
+                        <div className="flex flex-1 items-center justify-end">
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <Button size={"icon-lg"}>
+                                        <UserPlusIcon/>
+                                    </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    Добавить сотрудника
+                                </TooltipContent>
+                            </Tooltip>
+                        </div>,
+                        ap2
+                    )
+                }
                 {employeesList ? (
                     <ScrollArea className="h-full w-full">
-                        <Table className="table-fixed w-full">
-                            <TableHeader className="sticky z-10 top-0 bg-background">
+                        <Table className="table-fixed w-full select-none">
+                            <TableHeader className="sticky z-10 top-0 bg-(--sidebar) text-sm">
                                 <TableRow>
                                     <TableHead className="w-[24%] font-bold">Ф.И.О.</TableHead>
                                     <TableHead className="w-[18%] font-bold">Должность</TableHead>
@@ -78,7 +99,7 @@ export function EmployeesComponent() {
                             </TableHeader>
                             <TableBody>
                                 {employeesList?.map((item) => (
-                                    <TableRow key={item.id}>
+                                    <TableRow key={item.id} onDoubleClick={() => {router.push(`/employees/${item.id}`)}} >
                                         <TableCell className="whitespace-normal break-words w-[24%]">{item.fullname}</TableCell>
                                         <TableCell className="whitespace-normal break-words w-[18%]">{item.position.clientName}</TableCell>
                                         <TableCell className="whitespace-normal break-words w-[21%]">{item.department.clientName}</TableCell>

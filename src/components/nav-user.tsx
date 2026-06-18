@@ -31,7 +31,7 @@ export function NavUser({ session }: Props) {
             <SidebarMenuItem className="h-fit">
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <SidebarMenuButton size={"lg"} className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground h-fit">
+                        <SidebarMenuButton size={"lg"} className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground h-fit select-none">
                             <div className="grid flex-1 text-left text-sm leading-tight break-normal">
                                 <span className="font-medium text-sm">{session?.user.employee.fullname}</span>
                                 <span className="text-xs">{session?.user.email}</span>

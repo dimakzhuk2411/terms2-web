@@ -25,30 +25,25 @@ async function getSession(): Promise<Session> {
     return await res.json();
 }
 
-function filterMenuByRoles(
-  menu: MenuItem[],
-  roles: string[]
-): MenuItem[] {
-  return menu
-    .map((item): MenuItem | null => {
-      const items = item.items
-        ? filterMenuByRoles(item.items, roles)
-        : undefined;
+function filterMenuByRoles(menu: MenuItem[], roles: string[]): MenuItem[] {
+    return menu
+        .map((item): MenuItem | null => {
+            const items = item.items
+                ? filterMenuByRoles(item.items, roles)
+                : undefined;
 
-      const canSee =
-        item.permission &&
-        roles.includes(item.permission);
+            const hasChildren = !!items?.length;
 
-      const hasChildren = items && items.length > 0;
+            const canSee = roles.includes(item.permission);
 
-      if (!canSee && !hasChildren) return null;
+            if (!canSee && !hasChildren) return null;
 
-      return {
-        ...item,
-        items,
-      };
-    })
-    .filter((item): item is MenuItem => item !== null);
+            return {
+                ...item,
+                items,
+            };
+        })
+        .filter((item): item is MenuItem => item !== null);
 }
 
 async function prepareSidebar() {
@@ -63,10 +58,12 @@ async function prepareSidebar() {
         }
     );
 
+    if (!res.ok) return null
+
     const roles = await res.json();
 
     const menu = filterMenuByRoles(MENU_CONFIG, roles);
-    
+
     return menu
 }
 
@@ -78,7 +75,7 @@ export default async function ProtectedLayout({
     const session = await getSession();
 
     if (!session) redirect("/login");
-    
+
     await prepareSidebar();
 
     const menu = await prepareSidebar();
@@ -86,7 +83,7 @@ export default async function ProtectedLayout({
     return (
         <div className="min-h-0 h-full">
             <SidebarProvider>
-                <AppSidebar menu={menu} session={session}/>
+                <AppSidebar menu={menu} session={session} />
                 <SidebarInset>
                     <header className="flex h-16 shrink-0 items-center transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
                         <div className="flex w-full items-center gap-2 px-4">
@@ -96,9 +93,9 @@ export default async function ProtectedLayout({
                                 className="data-[orientation=vertical]:h-10"
                             />
                             <div className="flex flex-1 w-full h-10 gap-x-4 justify-stretch items-center">
-                                <div id="module-name" className="h-full w-full flex items-center"/>
-                                <div id="action-pack-1" className="h-full w-full flex items-center"/>
-                                <div id="action-pack-2" className="h-full w-full flex items-center"/>
+                                <div id="module-name" className="h-full w-full flex items-center" />
+                                <div id="action-pack-1" className="h-full w-full flex items-center" />
+                                <div id="action-pack-2" className="h-full w-full flex items-center" />
                             </div>
                         </div>
                     </header>

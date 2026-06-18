@@ -14,3 +14,20 @@ export type Employee = {
         clientName: string
     }
 }
+
+export type EmployeeFull = {
+    fullname: string,
+    persnum: string,
+    mobile: string,
+    corporate: string,
+    department: {
+        clientName: string,
+        management: {
+            clientName: string
+        }
+    },
+    position: {
+        clientName: string
+    },
+    fired: boolean
+}

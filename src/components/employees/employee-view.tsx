@@ -10,6 +10,7 @@ import { Field, FieldGroup, FieldLabel, FieldSet } from "../ui/field";
 import { Textarea } from "../ui/textarea";
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "../ui/empty";
 import { SealWarningIcon } from "@phosphor-icons/react";
+import { PhoneInput } from "../ui/phone-input";
 
 export function ViewEmployee({ emplID }: { emplID: string }) {
     const [error, setError] = useState("");
@@ -38,6 +39,7 @@ export function ViewEmployee({ emplID }: { emplID: string }) {
 
             const data = await res.json();
 
+            console.log(data);
             setEmplData(data);
         }
         catch (err) {
@@ -102,7 +104,7 @@ export function ViewEmployee({ emplID }: { emplID: string }) {
                                                 </Field>
                                                 <Field>
                                                     <FieldLabel htmlFor="mobile">Сотовый телефон</FieldLabel>
-                                                    <Input id="mobile" disabled defaultValue={emplData?.mobile} />
+                                                    <PhoneInput id="mobile" disabled defaultValue={emplData?.mobile} />
                                                 </Field>
                                             </FieldGroup>
                                         </FieldSet>
@@ -120,7 +122,12 @@ export function ViewEmployee({ emplID }: { emplID: string }) {
                                                 </Field>
                                                 <Field>
                                                     <FieldLabel htmlFor="corporate">Корпоративный телефон</FieldLabel>
-                                                    <Input id="corporate" disabled defaultValue={emplData?.corporate} />
+                                                    <PhoneInput
+                                                        id="corporate" 
+                                                        typeMode="landline" 
+                                                        disabled 
+                                                        defaultValue={emplData?.corporate} 
+                                                    />
                                                 </Field>
                                             </FieldGroup>
                                         </FieldSet>

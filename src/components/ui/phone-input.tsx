@@ -3,47 +3,85 @@
 import * as React from "react"
 import { Input } from "@/components/ui/input"
 
-export interface PhoneInputProps
-  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "onChange" | "value"> {
-  value: string
-  onChange: (value: string) => void
-  typeMode?: "mobile" | "landline"
+const getDigits = (val: string | null | undefined): string => {
+  if (!val) return ""
+  return val.replace(/\D/g, "")
 }
 
-export function PhoneInput({ className, value, onChange, typeMode = "mobile", id, ...props }: PhoneInputProps) {
+const formatMobile = (digits: string) => {
+  let cleaned = digits
+  if (cleaned.startsWith("7") || cleaned.startsWith("8")) {
+    cleaned = cleaned.substring(1)
+  }
+  cleaned = cleaned.substring(0, 10)
+
+  if (cleaned.length === 0) return ""
+  
+  let result = "+7 "
+  if (cleaned.length > 0) result += "(" + cleaned.substring(0, 3)
+  if (cleaned.length >= 3) result += ") " + cleaned.substring(3, 6)
+  if (cleaned.length >= 6) result += "-" + cleaned.substring(6, 8)
+  if (cleaned.length >= 8) result += "-" + cleaned.substring(8, 10)
+  return result
+}
+
+const formatLandline = (digits: string) => {
+  const cleaned = digits.substring(0, 7)
+  if (cleaned.length === 0) return ""
+  
+  let result = ""
+  if (cleaned.length > 0) result += cleaned.substring(0, 3)
+  if (cleaned.length >= 3) result += "-" + cleaned.substring(3, 7)
+  return result
+}
+
+export interface PhoneInputProps
+  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "onChange" | "value" | "defaultValue"> {
+  value?: string
+  defaultValue?: string | null
+  onChange?: (value: string) => void
+  typeMode?: "mobile" | "landline"
+  disabled?: boolean
+}
+
+export function PhoneInput({ 
+  className, 
+  value, 
+  defaultValue, 
+  onChange, 
+  typeMode = "mobile", 
+  id, 
+  disabled, 
+  ...props 
+}: PhoneInputProps) {
   const inputRef = React.useRef<HTMLInputElement>(null)
   const selectionRef = React.useRef<number | null>(null)
 
-  const getDigits = (val: string) => val.replace(/\D/g, "")
+  const isControlled = value !== undefined
+  
+  const [internalValue, setInternalValue] = React.useState<string>("")
 
-  const formatMobile = (digits: string) => {
-    let cleaned = digits
-    if (cleaned.startsWith("7") || cleaned.startsWith("8")) {
-      cleaned = cleaned.substring(1)
+  React.useEffect(() => {
+    if (!isControlled) {
+      const safeDefaultValue = String(defaultValue ?? "")
+      const digits = getDigits(safeDefaultValue)
+      const formatted = typeMode === "mobile" ? formatMobile(digits) : formatLandline(digits)
+      setInternalValue(formatted)
     }
-    cleaned = cleaned.substring(0, 10)
+  }, [defaultValue, typeMode, isControlled])
 
-    if (cleaned.length === 0) return ""
-    
-    let result = "+7 "
-    if (cleaned.length > 0) result += "(" + cleaned.substring(0, 3)
-    if (cleaned.length >= 3) result += ") " + cleaned.substring(3, 6)
-    if (cleaned.length >= 6) result += "-" + cleaned.substring(6, 8)
-    if (cleaned.length >= 8) result += "-" + cleaned.substring(8, 10)
-    return result
-  }
+  const currentValue = isControlled ? value : internalValue
 
-  const formatLandline = (digits: string) => {
-    const cleaned = digits.substring(0, 7)
-    if (cleaned.length === 0) return ""
-    
-    let result = ""
-    if (cleaned.length > 0) result += cleaned.substring(0, 3)
-    if (cleaned.length >= 3) result += "-" + cleaned.substring(3, 7)
-    return result
+  const updateValue = (newValue: string) => {
+    if (!isControlled) {
+      setInternalValue(newValue)
+    }
+    onChange?.(newValue)
   }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (disabled) return
+    
     const input = e.currentTarget
     if (e.key !== "Backspace") return
 
@@ -99,11 +137,13 @@ export function PhoneInput({ className, value, onChange, typeMode = "mobile", id
       }
 
       selectionRef.current = targetPos
-      onChange(formatted)
+      updateValue(formatted)
     }
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (disabled) return
+
     const input = e.target
     const originalValue = input.value
     const originalSelectionStart = input.selectionStart || 0
@@ -140,7 +180,7 @@ export function PhoneInput({ className, value, onChange, typeMode = "mobile", id
     }
 
     selectionRef.current = targetSelectionStart
-    onChange(formatted)
+    updateValue(formatted)
   }
 
   React.useLayoutEffect(() => {
@@ -148,11 +188,7 @@ export function PhoneInput({ className, value, onChange, typeMode = "mobile", id
       inputRef.current.setSelectionRange(selectionRef.current, selectionRef.current)
       selectionRef.current = null
     }
-  }, [value])
-
-  React.useEffect(() => {
-    onChange("")
-  }, [typeMode])
+  }, [currentValue])
 
   return (
     <Input
@@ -160,9 +196,10 @@ export function PhoneInput({ className, value, onChange, typeMode = "mobile", id
       id={id}
       type="text"
       placeholder={typeMode === "mobile" ? "+7 (999) 999-99-99" : "333-4444"}
-      value={value}
+      value={currentValue}
       onKeyDown={handleKeyDown}
       onChange={handleChange}
+      disabled={disabled}
       className={className}
       {...props}
     />

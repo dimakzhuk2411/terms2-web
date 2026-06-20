@@ -15,5 +15,11 @@ export const MENU_CONFIG: MenuItem[] = [
                 permission: Roles.EmployeesEdit
             }
         ]
+    },
+    {
+        title: "СКЗИ",
+        url: "/skzi",
+        icon: "skzi",
+        permission: Roles.SKZI
     }
 ]

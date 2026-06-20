@@ -4,6 +4,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuLab
 import { CaretUpDownIcon, UserCircleIcon, SignOutIcon } from "@phosphor-icons/react"
 import { useRouter } from "next/navigation"
 import { ModeToggle } from "./custom/themeModeToggler"
+import { Avatar } from "./ui/avatar"
 
 type Props = {
     session: Session;
@@ -32,9 +33,9 @@ export function NavUser({ session }: Props) {
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <SidebarMenuButton size={"lg"} className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground h-fit select-none">
+                            <Avatar />
                             <div className="grid flex-1 text-left text-sm leading-tight break-normal">
                                 <span className="font-medium text-sm">{session?.user.employee.fullname}</span>
-                                <span className="text-xs">{session?.user.email}</span>
                             </div>
                             <CaretUpDownIcon className="ml-auto size-4" />
                         </SidebarMenuButton>

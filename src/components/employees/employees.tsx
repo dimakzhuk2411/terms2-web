@@ -34,8 +34,6 @@ export function EmployeesComponent({canEdit} : {canEdit: boolean}) {
 
             const data = await response.json();
 
-            console.log(data);
-
             setEmployeesList(data);
         }
         catch (err: any) {

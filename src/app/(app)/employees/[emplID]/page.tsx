@@ -3,12 +3,12 @@ import { ViewEmployee } from "@/components/employees/employee-view"
 export default async function EmployeeView({
     params
 } : {
-    params: {emplID: string}
+    params: Promise<{emplID: string}>
 }) {
-    
+    const {emplID} = await params;
 
 
     return (
-        <ViewEmployee/>
+        <ViewEmployee emplID={emplID}/>
     )
 }
